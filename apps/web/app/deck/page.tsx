@@ -195,8 +195,8 @@ function CoverSlide() {
           transition={{ duration: 0.6, delay: 0.3, ease }}
           className="mt-7 max-w-xl text-balance text-[18px] leading-relaxed text-ink-soft/85"
         >
-          $50 milyar dolarlık sektör. Sıfır komisyon, anlık settle, cüzdansız
-          UX. Iyzico'nun ulaşamadığı yere Monad'la girdik.
+          Sıfır komisyon, anlık settle, cüzdansız UX. Türkiye'de Stripe yok —
+          biz Monad'la girdik.
         </motion.p>
 
         <motion.div
@@ -232,26 +232,26 @@ function ProblemSlide() {
 
         <div className="mt-20 grid gap-12 md:grid-cols-3">
           <BigStat
-            value="$50B"
-            label="YILLIK"
-            sub="Türkiye F&B hacmi"
+            value="100K+"
+            label="MEKAN"
+            sub="Türkiye F&B işletmesi"
           />
           <BigStat
-            value="$1.5B"
+            value="1.5M+"
+            label="ÇALIŞAN"
+            sub="Konaklama + yiyecek istihdamı"
+          />
+          <BigStat
+            value="%2-3"
             label="KOMİSYON"
-            sub="Iyzico/Param/Param vb. POS'larda eriyor"
-          />
-          <BigStat
-            value="9B TL"
-            label="BAHŞİŞ"
-            sub="Çalışana ulaşmıyor · havuz manipülasyonu"
+            sub="Iyzico/Param standart POS bandı"
           />
         </div>
 
         <p className="mt-20 max-w-2xl text-balance text-[18px] leading-relaxed text-white/70">
-          Iyzico %3 alır, settle 72 saat, müşteri data bankanın kasasında.
-          Garson bahşişini havuzda kaybeder. Mevcut altyapı üç tarafı da
-          fakirleştiriyor.
+          Iyzico %2-3 alır, settle 72 saat, müşteri data bankanın kasasında.
+          Bahşiş havuzu manipülasyona açık, garson tam payını alamaz. Mevcut
+          POS üç tarafı da yoruyor.
         </p>
       </div>
     </Slide>
