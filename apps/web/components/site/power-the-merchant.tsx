@@ -11,15 +11,15 @@ const CARDS = [
     accent: "purple",
     cta: "MEKAN OL",
     href: "/onboard",
-    badge: "Iyzico %3 → ~$0.001",
+    badge: "%3 → ~$0.001",
   },
   {
     title: "Sadakat Pasaportu",
-    desc: "Müşteri her ödemede cüzdanına NFT mührü alır. Şehir koalisyonu = network etkisi.",
+    desc: "Müşteri her ödemede cüzdanına NFT mührü alır. Şehir koalisyonu, network etkisi.",
     accent: "ink",
-    cta: "DASHBOARD",
+    cta: "PANELE GİT",
     href: "/m/kafe-bogaz",
-    badge: "Koalisyon NFT",
+    badge: "Şehir Koalisyonu",
   },
 ] as const;
 
@@ -41,17 +41,17 @@ export function PowerTheMerchant() {
             <div className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1">
               <span className="h-1.5 w-1.5 rounded-full bg-monad-purple" />
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-soft">
-                MERCHANT
+                MEKAN
               </span>
             </div>
 
             <h2 className="mt-6 font-display text-[40px] font-bold leading-[0.95] tracking-[-0.025em] text-ink md:text-[72px]">
-              Power the<br />
-              <span className="italic text-monad-purple">merchant.</span>
+              Mekanı<br />
+              <span className="italic text-monad-purple">güçlendir.</span>
             </h2>
 
             <p className="mt-6 max-w-md text-balance text-[15px] leading-relaxed text-ink-soft/85">
-              Sadık müşteri profili, komisyonsuz cashflow, anlık bahşiş havuzu.
+              Sadık müşteri profili, komisyonsuz tahsilat, anlık bahşiş havuzu.
               Tek altyapı, F&B'deki üç tarafın sürtünmesini de keser.
             </p>
 

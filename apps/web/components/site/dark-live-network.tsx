@@ -53,7 +53,7 @@ export function DarkLiveNetwork() {
         [
           { ...next, id: `live-${counter}`, ts: clockNow() },
           ...prev,
-        ].slice(0, 5),
+        ].slice(0, 4),
       );
     }, 3200);
 
@@ -73,10 +73,10 @@ export function DarkLiveNetwork() {
       {/* Top stat strip */}
       <div className="border-b border-white/[0.06]">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-6 px-6 py-5 md:grid-cols-5 md:gap-y-0">
-          <Stat label="BLOCK TIME" value={`${blockMs}`} unit="ms" sparkline />
+          <Stat label="BLOK SÜRESİ" value={`${blockMs}`} unit="ms" sparkline />
           <Stat label="TPS" value={`${tps}`} sparkline />
-          <Stat label="MERCHANTS" value="17" />
-          <Stat label="VALIDATORS" value="200" />
+          <Stat label="MEKAN" value="17" />
+          <Stat label="DOĞRULAYICI" value="200" />
           <div className="flex items-center justify-end">
             <a
               href="https://testnet.monadexplorer.com"
@@ -84,7 +84,7 @@ export function DarkLiveNetwork() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-white/60 transition-colors hover:text-white"
             >
-              VIEW FULL NETWORK <ArrowUpRight className="h-3 w-3" />
+              TÜM AĞI GÖR <ArrowUpRight className="h-3 w-3" />
             </a>
           </div>
         </div>
@@ -92,7 +92,6 @@ export function DarkLiveNetwork() {
 
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
         <div className="grid items-end gap-12 md:grid-cols-12">
-          {/* Left — message */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -103,19 +102,18 @@ export function DarkLiveNetwork() {
             <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.10] bg-white/[0.03] px-3 py-1 backdrop-blur">
               <PulseDot tone="success" size="sm" />
               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-success">
-                LIVE NETWORK
+                CANLI AĞ
               </span>
             </div>
 
             <h2 className="mt-6 font-display text-[40px] font-bold leading-[0.95] tracking-[-0.025em] text-white md:text-[72px]">
-              Watch Klink
-              <br />
-              execute, <span className="italic text-monad-purple-pale">live.</span>
+              Klink'i<br />
+              <span className="italic text-monad-purple-pale">canlı izle.</span>
             </h2>
 
             <p className="mt-6 max-w-md text-balance text-[15px] leading-relaxed text-white/70">
-              Every payment. Every tip. Every loyalty stamp. Monad testnet'te
-              ~0.4 saniyede settle, $0.001 gas, paralel EVM execution.
+              Her ödeme. Her bahşiş. Her sadakat mührü. Monad testnet'te ~0.4
+              saniyede settle, $0.001 gas, paralel EVM yürütme.
             </p>
 
             <a
@@ -124,11 +122,10 @@ export function DarkLiveNetwork() {
               rel="noopener noreferrer"
               className="mt-10 inline-flex h-12 items-center gap-2 rounded-pill bg-monad-purple px-7 text-[12px] font-bold uppercase tracking-[0.18em] text-white shadow-monad-button transition-transform hover:scale-[1.04]"
             >
-              OPEN VISUALIZER <ArrowUpRight className="h-4 w-4" />
+              GÖRSELLEŞTİR <ArrowUpRight className="h-4 w-4" />
             </a>
           </motion.div>
 
-          {/* Right — node viz card */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -147,16 +144,15 @@ export function DarkLiveNetwork() {
                 </span>
               </header>
 
-              {/* Block execution mini-viz */}
               <div className="relative h-32 overflow-hidden border-b border-white/[0.06] px-5 py-4">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
-                  PARALLEL EVM EXECUTION
+                  PARALEL EVM YÜRÜTME
                 </span>
                 <BlockViz />
               </div>
 
-              {/* Live tx list */}
-              <ul className="divide-y divide-white/[0.04]">
+              {/* Fixed-height feed list — layout shift yok */}
+              <ul className="min-h-[208px] divide-y divide-white/[0.04]">
                 <AnimatePresence initial={false}>
                   {feed.map((tx) => (
                     <motion.li
@@ -178,7 +174,7 @@ export function DarkLiveNetwork() {
                           +{tx.amount}₺
                         </span>
                         <span className="rounded-full bg-success/15 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-success">
-                          +{tx.tip}₺ tip
+                          +{tx.tip}₺
                         </span>
                       </div>
                     </motion.li>
@@ -187,8 +183,8 @@ export function DarkLiveNetwork() {
               </ul>
 
               <footer className="flex items-center justify-between border-t border-white/[0.06] px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-white/40">
-                <span>OPTIMAL · ~$0.001 / tx</span>
-                <span className="font-mono">10,000 TPS · 100% EVM</span>
+                <span>OPTİMAL · ~$0.001 / işlem</span>
+                <span className="font-mono">10,000 TPS · %100 EVM</span>
               </footer>
             </div>
           </motion.div>
@@ -233,10 +229,6 @@ function Stat({
   );
 }
 
-/**
- * Mini parallel EVM execution viz — animated horizontal bars filling
- * left-to-right with staggered delays. Pure CSS animation.
- */
 function BlockViz() {
   return (
     <div className="mt-3 space-y-1.5">

@@ -48,7 +48,8 @@
   color-scheme: light;
 }
 
-html {
+html,
+body {
   background: var(--color-bg-base);
   color: var(--color-ink);
   font-family: var(--font-sans);
@@ -56,10 +57,12 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: clip; /* Hero tile + parallax overflow → no horizontal scroll */
 }
 
 body {
   min-height: 100dvh;
+  overscroll-behavior-y: none; /* Footer'da rubber-band scroll kapalı */
 }
 
 /* Selection — Monad purple wash */

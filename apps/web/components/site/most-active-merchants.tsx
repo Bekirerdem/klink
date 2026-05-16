@@ -17,7 +17,7 @@ const TOP_ROWS: Row[] = [
   {
     rank: 1,
     name: "Kafe Boğaz",
-    tagline: "Çanakkale third-wave coffee",
+    tagline: "Üçüncü dalga kahve · Çanakkale",
     emoji: "☕",
     change: 4,
     href: "/m/kafe-bogaz",
@@ -25,7 +25,7 @@ const TOP_ROWS: Row[] = [
   {
     rank: 2,
     name: "Bar Asit",
-    tagline: "Natural wine bar",
+    tagline: "Doğal şarap bar",
     emoji: "🍸",
     change: -1,
     href: "/m/bar-asit",
@@ -33,7 +33,7 @@ const TOP_ROWS: Row[] = [
   {
     rank: 3,
     name: "Bistro Mart",
-    tagline: "Mediterranean bistro",
+    tagline: "Akdeniz bistro",
     emoji: "🍽",
     change: -1,
     href: "/m/bistro-mart",
@@ -41,7 +41,7 @@ const TOP_ROWS: Row[] = [
   {
     rank: 4,
     name: "Pub Salt",
-    tagline: "Craft beer pub",
+    tagline: "Zanaat biracı pub",
     emoji: "🍺",
     change: 0,
     href: "/m/pub-salt",
@@ -49,7 +49,7 @@ const TOP_ROWS: Row[] = [
   {
     rank: 5,
     name: "Cafe 18.5",
-    tagline: "Specialty café",
+    tagline: "Spesiyalite kafe",
     emoji: "☕",
     change: -2,
     href: "/m/cafe-18-5",
@@ -60,7 +60,7 @@ const HOT_ROWS: Row[] = [
   {
     rank: 1,
     name: "Kafe Boğaz",
-    tagline: "Çanakkale third-wave coffee",
+    tagline: "Üçüncü dalga kahve · Çanakkale",
     emoji: "☕",
     change: 68,
     href: "/m/kafe-bogaz",
@@ -68,7 +68,7 @@ const HOT_ROWS: Row[] = [
   {
     rank: 2,
     name: "Demirhan",
-    tagline: "Cocktail bar · 1 yıldız",
+    tagline: "Kokteyl bar · 1 yıldız",
     emoji: "🥃",
     change: 33,
     href: "/m/demirhan",
@@ -76,7 +76,7 @@ const HOT_ROWS: Row[] = [
   {
     rank: 3,
     name: "Marina Pub",
-    tagline: "Waterfront pub",
+    tagline: "Sahil pub",
     emoji: "🌊",
     change: 9,
     href: "/m/marina-pub",
@@ -84,7 +84,7 @@ const HOT_ROWS: Row[] = [
   {
     rank: 4,
     name: "Sahil Kahve",
-    tagline: "Seaside café",
+    tagline: "Deniz kenarı kafe",
     emoji: "🍵",
     change: 4,
     href: "/m/sahil-kahve",
@@ -92,7 +92,7 @@ const HOT_ROWS: Row[] = [
   {
     rank: 5,
     name: "Tatlı Niyet",
-    tagline: "Patisserie",
+    tagline: "Pastane",
     emoji: "🍰",
     change: 3,
     href: "/m/tatli-niyet",
@@ -100,10 +100,10 @@ const HOT_ROWS: Row[] = [
 ];
 
 const QUICK_LINKS = [
-  { label: "PAY", href: "/pay/demo", icon: PayIcon },
+  { label: "ÖDE", href: "/pay/demo", icon: PayIcon },
   { label: "BAHŞİŞ", href: "/staff", icon: TipIcon },
-  { label: "LOYALTY", href: "/m/kafe-bogaz", icon: LoyaltyIcon },
-  { label: "ONBOARD", href: "/onboard", icon: OnboardIcon },
+  { label: "SADAKAT", href: "/m/kafe-bogaz", icon: LoyaltyIcon },
+  { label: "KAYIT", href: "/onboard", icon: OnboardIcon },
 ];
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -122,22 +122,22 @@ export function MostActiveMerchants() {
         >
           <div>
             <h2 className="font-display text-[32px] font-bold leading-[0.95] tracking-[-0.025em] text-ink md:text-[56px]">
-              Most Active Mekanlar
+              En Aktif Mekanlar
             </h2>
             <p className="mt-3 text-[14px] text-ink-link">
-              Top Klink merchants by today's hourly transaction volume
+              Bugünün saatlik işlem hacmine göre Klink mekanları
             </p>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-link">
-            Updated Today, 5:00 PM
+            Bugün · 17:00'da güncellendi
           </span>
         </motion.div>
 
         {/* Two-column lists */}
         <div className="mt-14 grid gap-x-10 gap-y-10 md:grid-cols-2">
-          <Column title="TOP · most active" dotTone="purple" rows={TOP_ROWS} />
+          <Column title="EN AKTİF · şu an" dotTone="purple" rows={TOP_ROWS} />
           <Column
-            title="HOT · vs. last hour"
+            title="POPÜLER · saat-saat"
             dotTone="error"
             rows={HOT_ROWS}
             percentChange
@@ -145,7 +145,7 @@ export function MostActiveMerchants() {
           />
         </div>
 
-        {/* View all link */}
+        {/* View all */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -157,11 +157,11 @@ export function MostActiveMerchants() {
             href="/m/kafe-bogaz"
             className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-link transition-colors hover:text-monad-purple"
           >
-            View all in App Hub <ArrowRight className="h-3 w-3" />
+            Hepsini Mekan Hub'da gör <ArrowRight className="h-3 w-3" />
           </Link>
         </motion.div>
 
-        {/* Quick action grid (Stake / Vaults / App Hub / Rewards equiv) */}
+        {/* Quick actions */}
         <div className="mt-24 grid grid-cols-2 border-y border-black/[0.06] md:grid-cols-4">
           {QUICK_LINKS.map((link, i) => (
             <motion.div
@@ -274,8 +274,6 @@ function ChangeIndicator({
     </span>
   );
 }
-
-/* Monad-style minimal line icons */
 
 function PayIcon({ className }: { className?: string }) {
   return (
