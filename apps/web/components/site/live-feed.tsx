@@ -35,15 +35,19 @@ function formatClock(d: Date) {
 const ease = [0.4, 0, 0.2, 1] as const;
 
 export function LiveFeed() {
-  const [feed, setFeed] = useState<Tx[]>(() =>
-    seed.slice(0, 4).map((tx, i) => ({
-      ...tx,
-      id: `seed-${i}`,
-      ts: formatClock(new Date(Date.now() - (4 - i) * 17_000)),
-    })),
-  );
+  // SSR'da boş, mount sonrası doldur — hydration mismatch'i önlemek için
+  // (Date.now() server vs client farkı yaratıyor).
+  const [feed, setFeed] = useState<Tx[]>([]);
 
   useEffect(() => {
+    setFeed(
+      seed.slice(0, 4).map((tx, i) => ({
+        ...tx,
+        id: `seed-${i}`,
+        ts: formatClock(new Date(Date.now() - (4 - i) * 17_000)),
+      })),
+    );
+
     let counter = 0;
     const interval = setInterval(() => {
       counter += 1;

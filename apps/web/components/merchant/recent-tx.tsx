@@ -16,9 +16,10 @@ function clockNow() {
 }
 
 export function RecentTxPanel({ merchant }: { merchant: DemoMerchant }) {
+  // SSR'da sabit seed verisi, mount sonrası interval ile büyüt.
+  // Math.random() / Date.now() initializer'da olunca hydration patlıyor.
   const [feed, setFeed] = useState<RecentTx[]>(merchant.recentTx);
 
-  // Demo'da yeni TX simülasyonu — production'da indexer subscription.
   useEffect(() => {
     let counter = 0;
     const interval = setInterval(() => {
