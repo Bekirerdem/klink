@@ -38,6 +38,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
           theme: "light",
           accentColor: "#6e54ff",
           showWalletLoginFirst: false,
+          // Sadece istediğimiz cüzdanları modal'da listele.
+          // Core wallet gibi injected provider'ların window.ethereum'u
+          // hijack etmesi → user MetaMask seçemiyor. walletList ile
+          // explicit kontrol — Core seçeneği listede yer almaz.
+          walletList: ["metamask", "wallet_connect", "coinbase_wallet"],
         },
         loginMethods: ["email", "sms", "wallet"],
         embeddedWallets: {
