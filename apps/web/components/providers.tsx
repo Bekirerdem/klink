@@ -41,7 +41,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         },
         loginMethods: ["email", "sms", "wallet"],
         embeddedWallets: {
-          createOnLogin: "users-without-wallets",
+          ethereum: {
+            createOnLogin: "users-without-wallets",
+          },
         },
         defaultChain: monadTestnet,
         supportedChains: [monadTestnet],
