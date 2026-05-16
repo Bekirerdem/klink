@@ -7,18 +7,8 @@ import { ArrowRight, ArrowUpRight, ScanLine } from "lucide-react";
 import { PulseDot } from "@/components/ui/pulse-dot";
 
 /**
- * Klink pitch deck — 8 slide, snap-scroll vertical full-screen, klavye nav.
- * Light/dark alternating rhythm. Monad app DNA: editorial typography,
- * mono numerics, asimetrik grids, eyebrow tags, italic emphasis.
- *
- *   1. COVER         (light) — Hero + brand
- *   2. PROBLEM       (dark)  — 5M çalışan / 50K mekan / %3 komisyon
- *   3. AKTÖRLER      (mute)  — 3 pain kartı
- *   4. ÇÖZÜM         (light) — Tek altyapı, tek tx + 4 modül
- *   5. DEMO          (dark)  — Akış + Live URL
- *   6. MİMARİ        (mute)  — Stack + deployed contracts
- *   7. NEDEN MONAD   (light) — 10,000 TPS · 0.4s · $0.001
- *   8. FİNAL         (dark)  — Roadmap + linkler + outro
+ * Klink pitch deck — 8 slide. Startup-grade headlines + somut market
+ * sayıları. Bekir Erdem · Monad Blitz Çanakkale · 16.05.2026.
  */
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -37,7 +27,6 @@ export default function DeckPage() {
     return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Klavye nav: ArrowDown/Up + Space + PageUp/Down
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const container = document.getElementById("deck-scroll");
@@ -80,8 +69,6 @@ export default function DeckPage() {
       <ArchitectureSlide />
       <WhyMonadSlide />
       <FinalSlide />
-
-      {/* Progress indicator */}
       <ProgressDots total={8} current={current} />
     </main>
   );
@@ -161,7 +148,6 @@ function Eyebrow({
 function CoverSlide() {
   return (
     <Slide bg="light">
-      {/* Watermark K */}
       <div
         className="pointer-events-none absolute inset-0 flex select-none items-center justify-center"
         aria-hidden
@@ -171,7 +157,6 @@ function CoverSlide() {
         </span>
       </div>
 
-      {/* Grid */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -190,7 +175,7 @@ function CoverSlide() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
         >
-          <Eyebrow>KLINK · İLK DALGA · ÇANAKKALE</Eyebrow>
+          <Eyebrow>KLINK · ON-CHAIN POS · ÇANAKKALE 2026</Eyebrow>
         </motion.div>
 
         <motion.h1
@@ -199,9 +184,9 @@ function CoverSlide() {
           transition={{ duration: 0.7, delay: 0.15, ease }}
           className="mt-8 font-display text-[64px] font-bold leading-[0.92] tracking-[-0.035em] md:text-[148px]"
         >
-          Bambaşka.
+          Türk F&B'sinin
           <br />
-          <span className="italic text-monad-purple">Klink üstüne.</span>
+          <span className="italic text-monad-purple">on-chain POS'u.</span>
         </motion.h1>
 
         <motion.p
@@ -210,8 +195,8 @@ function CoverSlide() {
           transition={{ duration: 0.6, delay: 0.3, ease }}
           className="mt-7 max-w-xl text-balance text-[18px] leading-relaxed text-ink-soft/85"
         >
-          Türk F&B sektörünün Monad'a ilk dalgası. Cüzdansız QR ödeme, anlık
-          bahşiş, on-chain sadakat. Komisyonsuz.
+          $50 milyar dolarlık sektör. Sıfır komisyon, anlık settle, cüzdansız
+          UX. Iyzico'nun ulaşamadığı yere Monad'la girdik.
         </motion.p>
 
         <motion.div
@@ -239,20 +224,34 @@ function ProblemSlide() {
       <div className="relative z-10 w-full max-w-7xl">
         <Eyebrow tone="white">PROBLEM</Eyebrow>
 
-        <h2 className="mt-8 font-display text-[48px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[96px]">
-          Üç tarafı yoran <span className="italic text-monad-purple-pale">tek sistem.</span>
+        <h2 className="mt-8 font-display text-[44px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[88px]">
+          Sektör akıyor.
+          <br />
+          <span className="italic text-monad-purple-pale">Para kayboluyor.</span>
         </h2>
 
         <div className="mt-20 grid gap-12 md:grid-cols-3">
-          <BigStat value="50K+" label="MEKAN" sub="Türkiye F&B" />
-          <BigStat value="5M+" label="ÇALIŞAN" sub="Bahşiş nakit-only" />
-          <BigStat value="%3" label="KOMİSYON" sub="Iyzico / Param POS" />
+          <BigStat
+            value="$50B"
+            label="YILLIK"
+            sub="Türkiye F&B hacmi"
+          />
+          <BigStat
+            value="$1.5B"
+            label="KOMİSYON"
+            sub="Iyzico/Param/Param vb. POS'larda eriyor"
+          />
+          <BigStat
+            value="9B TL"
+            label="BAHŞİŞ"
+            sub="Çalışana ulaşmıyor · havuz manipülasyonu"
+          />
         </div>
 
         <p className="mt-20 max-w-2xl text-balance text-[18px] leading-relaxed text-white/70">
-          Iyzico/Param %3 alır. Settle 24-72 saat. Müşteri data bankada kilitli.
-          Bahşiş kart üzerinden alınmaz. Sadakat fiziksel kart-taşıma. Garson
-          patronun havuzunda kaybolur.
+          Iyzico %3 alır, settle 72 saat, müşteri data bankanın kasasında.
+          Garson bahşişini havuzda kaybeder. Mevcut altyapı üç tarafı da
+          fakirleştiriyor.
         </p>
       </div>
     </Slide>
@@ -275,13 +274,13 @@ function BigStat({
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.55, ease }}
     >
-      <p className="font-mono text-[80px] font-bold leading-none tabular-nums md:text-[120px]">
+      <p className="font-mono text-[72px] font-bold leading-none tabular-nums md:text-[112px]">
         {value}
       </p>
       <p className="mt-3 font-mono text-[12px] font-semibold uppercase tracking-[0.18em] text-monad-purple-pale">
         {label}
       </p>
-      <p className="mt-2 text-[14px] text-white/60">{sub}</p>
+      <p className="mt-2 max-w-[16ch] text-[14px] text-white/60">{sub}</p>
     </motion.div>
   );
 }
@@ -295,20 +294,20 @@ function ActorsSlide() {
     {
       emoji: "🏪",
       role: "MEKAN",
-      pain: "%2.5-3 komisyon, 24-72h settle, müşteri data banka'da kilitli.",
-      win: "Gas-only, anlık settle, on-chain müşteri profili.",
+      pain: "%3 komisyon, 72h settle, müşteri data kilitli.",
+      win: "Gas-only ücret, anlık settle, müşteri profili senin elinde.",
     },
     {
       emoji: "🙋",
       role: "MÜŞTERİ",
-      pain: "Split hesap kabusu, sadakat kart-taşıma, cüzdan korkusu.",
+      pain: "Split hesap zor, sadakat kart-taşıma, cüzdan korkusu.",
       win: "Email ile saniyede cüzdan, tek tap split + bahşiş, NFT sadakat.",
     },
     {
       emoji: "🧑‍🍳",
       role: "ÇALIŞAN",
-      pain: "Bahşiş havuzu manipülasyon, ay sonu maaş, vergi belirsizliği.",
-      win: "On-chain havuz, anlık cüzdan, BtcTurk off-ramp.",
+      pain: "Bahşiş havuzda kayboluyor, ay sonu maaş, vergi belirsiz.",
+      win: "On-chain havuz, anlık cüzdan, BtcTurk ile TL'ye çek.",
     },
   ];
 
@@ -318,7 +317,9 @@ function ActorsSlide() {
         <Eyebrow>AKTÖRLER</Eyebrow>
 
         <h2 className="mt-7 font-display text-[40px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[80px]">
-          Aynı transaction. <span className="italic text-monad-purple">Üç kazanan.</span>
+          Aynı transaction.
+          <br />
+          <span className="italic text-monad-purple">Üç kazanan.</span>
         </h2>
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
@@ -361,9 +362,9 @@ function ActorsSlide() {
 
 function SolutionSlide() {
   const modules = [
-    { label: "Cüzdansız Onboarding", desc: "Privy email/SMS, ~10sn" },
+    { label: "Cüzdansız Onboarding", desc: "Privy email/SMS · ~10sn" },
     { label: "PayBill Contract", desc: "Tek tx · split + bahşiş + NFT" },
-    { label: "TipPool", desc: "On-chain havuz · değiştirilemez" },
+    { label: "TipPool", desc: "On-chain havuz · patron değiştiremiyor" },
     { label: "Koalisyon NFT", desc: "Şehir bazlı sadakat pasaportu" },
   ];
 
@@ -373,14 +374,14 @@ function SolutionSlide() {
         <Eyebrow>ÇÖZÜM</Eyebrow>
 
         <div className="mt-7 grid items-end gap-12 md:grid-cols-12">
-          <h2 className="font-display text-[40px] font-bold leading-[0.95] tracking-[-0.03em] md:col-span-7 md:text-[88px]">
-            Tek altyapı.
+          <h2 className="font-display text-[40px] font-bold leading-[0.95] tracking-[-0.03em] md:col-span-7 md:text-[96px]">
+            Tek tap.
             <br />
-            <span className="italic text-monad-purple">Tek transaction.</span>
+            <span className="italic text-monad-purple">Üç kazanan.</span>
           </h2>
           <p className="max-w-md text-balance text-[16px] leading-relaxed text-ink-soft/85 md:col-span-5">
-            Müşteri öder, mekan tahsil eder, garson bahşişini alır, sadakat
-            mührü cüzdana düşer — hepsi tek call, ~0.4 saniyede.
+            Müşteri ödüyor, mekan tahsil ediyor, garson bahşişini alıyor,
+            sadakat mührü cüzdana düşüyor — hepsi tek call'da, 0.4 saniyede.
           </p>
         </div>
 
@@ -416,10 +417,10 @@ function SolutionSlide() {
 function DemoSlide() {
   const steps = [
     "QR'ı tara",
-    "Email ile bağlan",
+    "Email gir",
     "Bahşişi seç",
     "Tek tap öde",
-    "Sadakat mührü alındı",
+    "Sadakat alındı",
   ];
 
   return (
@@ -430,10 +431,10 @@ function DemoSlide() {
           <Eyebrow tone="white">DEMO · CANLI</Eyebrow>
         </div>
 
-        <h2 className="mt-8 font-display text-[44px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[96px]">
-          QR'dan ödemeye
+        <h2 className="mt-8 font-display text-[44px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[112px]">
+          30 saniye.
           <br />
-          <span className="italic text-monad-purple-pale">30 saniye.</span>
+          <span className="italic text-monad-purple-pale">Cüzdan yok. Komisyon yok.</span>
         </h2>
 
         <ol className="mt-16 grid grid-cols-1 gap-3 md:grid-cols-5">
@@ -465,7 +466,7 @@ function DemoSlide() {
             DEMO'YA GİT
           </Link>
           <span className="font-mono text-[12px] uppercase tracking-[0.14em] text-white/50">
-            /pay/demo · Kafe Boğaz · Masa 4
+            /pay/demo · Kafe Boğaz · Masa 4 · 161₺
           </span>
         </div>
       </div>
@@ -496,8 +497,10 @@ function ArchitectureSlide() {
       <div className="relative z-10 w-full max-w-7xl">
         <Eyebrow>MİMARİ</Eyebrow>
 
-        <h2 className="mt-7 font-display text-[40px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[80px]">
-          Sıfır şürpriz <span className="italic text-monad-purple">stack.</span>
+        <h2 className="mt-7 font-display text-[40px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[88px]">
+          4 contract. 5 route.
+          <br />
+          <span className="italic text-monad-purple">6 saat. Solo.</span>
         </h2>
 
         <div className="mt-16 grid items-start gap-16 md:grid-cols-2">
@@ -542,7 +545,7 @@ function ArchitectureSlide() {
               ))}
             </ul>
             <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-link">
-              6/6 forge test geçiyor · happy path · revert paths · weighted dağıtım
+              6/6 forge test geçti · happy + revert + weighted dağıtım
             </p>
           </div>
         </div>
@@ -568,16 +571,16 @@ function WhyMonadSlide() {
       <div className="relative z-10 w-full max-w-7xl">
         <Eyebrow>NEDEN MONAD</Eyebrow>
 
-        <h2 className="mt-7 font-display text-[40px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[80px]">
-          Mikro-ödeme için
+        <h2 className="mt-7 font-display text-[40px] font-bold leading-[0.95] tracking-[-0.03em] md:text-[96px]">
+          5 TL bahşiş için
           <br />
-          <span className="italic text-monad-purple">zorunlu altyapı.</span>
+          <span className="italic text-monad-purple">sub-cent gas.</span>
         </h2>
 
         <p className="mt-6 max-w-2xl text-balance text-[16px] leading-relaxed text-ink-soft/85">
-          Bahşiş = 5-50 TL. Sadakat mührü = 0 TL. Klink ekonomisi mikro-ödeme
-          ekonomisi. Ethereum L1'de gas 5-10 dolar — bizim için imkansız.
-          Monad'ın 10K TPS + sub-cent gas'ı tek mantıklı seçim.
+          Ethereum L1'de gas $5-10 — Klink'in mikro-ödeme ekonomisi orada
+          imkansız. Monad'ın 10K TPS + sub-cent gas'ı bu modelin tek mantıklı
+          altyapısı.
         </p>
 
         <div className="mt-20 grid grid-cols-2 gap-x-12 gap-y-12 md:grid-cols-4">
@@ -589,7 +592,7 @@ function WhyMonadSlide() {
               viewport={{ once: true, margin: "-10%" }}
               transition={{ duration: 0.5, delay: i * 0.08, ease }}
             >
-              <p className="font-mono text-[56px] font-bold leading-none tabular-nums md:text-[88px]">
+              <p className="font-mono text-[56px] font-bold leading-none tabular-nums md:text-[96px]">
                 {s.value}
               </p>
               <p className="mt-3 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-monad-purple">
@@ -604,15 +607,15 @@ function WhyMonadSlide() {
 }
 
 /* ─────────────────────────────────────────────────────────
- * 8. FİNAL — Roadmap + Links + Outro
+ * 8. FİNAL
  * ───────────────────────────────────────────────────────── */
 
 function FinalSlide() {
   const roadmap = [
-    { ver: "v0.1", status: "BUGÜN", what: "Hackathon MVP, Monad testnet deploy" },
-    { ver: "v0.2", status: "ÇEYREK", what: "Fiat onramp + koalisyon UI + dispute" },
-    { ver: "v0.3", status: "YIL 1", what: "Indexer + mobile PWA + scale" },
-    { ver: "v1.0", status: "MAINNET", what: "Circle USDC + EU MiCA + TR KVHS" },
+    { ver: "v0.1", status: "BUGÜN", what: "Hackathon MVP · Monad testnet canlı" },
+    { ver: "v0.2", status: "ÇEYREK", what: "Fiat onramp · koalisyon · dispute" },
+    { ver: "v0.3", status: "YIL 1", what: "Indexer · mobile · merchant scale" },
+    { ver: "v1.0", status: "MAINNET", what: "Circle USDC · EU MiCA · TR KVHS" },
   ];
 
   return (
@@ -622,10 +625,10 @@ function FinalSlide() {
           <div className="md:col-span-7">
             <Eyebrow tone="white">YARIN</Eyebrow>
 
-            <h2 className="mt-8 font-display text-[44px] font-bold leading-[0.92] tracking-[-0.03em] md:text-[112px]">
-              Bugün başla.
+            <h2 className="mt-8 font-display text-[44px] font-bold leading-[0.92] tracking-[-0.03em] md:text-[124px]">
+              Bugün canlı.
               <br />
-              <span className="italic text-monad-purple-pale">Yarın ölçeklen.</span>
+              <span className="italic text-monad-purple-pale">Yarın mainnet.</span>
             </h2>
 
             <div className="mt-14 space-y-3">
