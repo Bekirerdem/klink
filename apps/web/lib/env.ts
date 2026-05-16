@@ -1,9 +1,18 @@
 import { z } from "zod";
 
-const optionalAddress = z
-  .string()
-  .regex(/^0x[a-fA-F0-9]{40}$/)
-  .optional();
+/**
+ * Boş string'i undefined'a çevir, sonra opsiyonel 0x-address regex'i.
+ * `.env.local`'da contract adresleri henüz set'lenmemişken
+ * `NEXT_PUBLIC_..._ADDRESS=` boş kalıyor — zod normalde boş string'i
+ * geçersiz adres sayardı. Preprocess fix-up bu sürtünmeyi keser.
+ */
+const optionalAddress = z.preprocess(
+  (v) => (typeof v === "string" && v.length === 0 ? undefined : v),
+  z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{40}$/)
+    .optional(),
+);
 
 const ClientEnvSchema = z.object({
   NEXT_PUBLIC_PRIVY_APP_ID: z.string().optional().default(""),
