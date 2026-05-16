@@ -1,5 +1,6 @@
 import { SiteNav } from "@/components/site/site-nav";
 import { Hero } from "@/components/site/hero";
+import { ProtocolCloud } from "@/components/site/protocol-cloud";
 import { StatsStrip } from "@/components/site/stats-strip";
 import { SolutionCards } from "@/components/site/solution-cards";
 import { HowItWorks } from "@/components/site/how-it-works";
@@ -14,6 +15,7 @@ export default function HomePage() {
     <main className="relative">
       <SiteNav />
       <Hero />
+      <ProtocolCloud />
       <StatsStrip />
       <SolutionCards />
       <HowItWorks />
