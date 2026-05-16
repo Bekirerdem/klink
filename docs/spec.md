@@ -25,7 +25,8 @@ Türkiye'de 50K+ kafe/bar/restoran ve 5M+ hizmet çalışanı için mevcut altya
 
 Tek altyapı, üç tarafa değer. Beş ana modül:
 
-1. **Cüzdansız Onboarding** — Privy embedded wallet, email/SMS ile ~10 saniyede cüzdan.
+1. **Cüzdansız Onboarding (müşteri)** — Privy embedded wallet, email/SMS ile ~10 saniyede cüzdan. Müşteri tarafının kalbi — friction sıfır.
+2. **Cüzdan Connect (mekan/çalışan/dev)** — RainbowKit modal + MetaMask injected + WalletConnect v2. Profesyonel kullanıcılar zaten cüzdana sahip.
 2. **Top-Up Tab modeli** — Müşteri bir kez fund eder, sonraki tüm ödemeler tek tap (Starbucks app benzeri).
 3. **PayBill contract** — Tek transaction'da fatura + bahşiş + sadakat NFT mint.
 4. **TipPool contract** — On-chain bahşiş havuzu, vardiyaya göre dağılım. Patron manipule edemiyor.
@@ -46,7 +47,7 @@ Klink'in uzun vadeli vizyonu Türkiye'deki Iyzico/Param/Garanti POS altyapısın
 ### Regülasyon yol haritası
 
 - **Hackathon:** Open source protokol, testnet, sıfır endişe.
-- **MVP launch:** Non-custodial Privy embedded (key kullanıcıda) + smart contract P2P → Uniswap modeli gri alan.
+- **MVP launch:** Non-custodial Privy embedded müşteri tarafında (key kullanıcıda) + MetaMask/WC mekan tarafında + smart contract P2P → Uniswap modeli gri alan.
 - **Production:** Estonya / Litvanya offshore entity (EU MiCA lisanslı bölge) + TR partneri (BtcTurk/Binance TR) fiat çıkış için.
 - **Mass:** TR'de KVHS lisansı.
 
@@ -66,13 +67,13 @@ Klink'in uzun vadeli vizyonu Türkiye'deki Iyzico/Param/Garanti POS altyapısın
 3. Bahşiş seç → confirm → 5 saniye
 
 ### 5c. Mekan onboarding
-1. `mekan.klink.app` → cüzdan bağla (MetaMask veya Privy)
+1. `mekan.klink.app` → cüzdan bağla (MetaMask veya WalletConnect)
 2. İşletme bilgisi + bahşiş havuzu kuralı (% eşit / vardiya / pozisyon)
 3. Çalışan cüzdanlarını ekle
 4. Masa sayısı seç → QR'lar üretilir → PDF indir
 
 ### 5d. Çalışan
-1. Mekan davetli linki → Privy ile cüzdan
+1. Mekan davetli linki → MetaMask ile cüzdan bağla
 2. Adres mekan TipPool sözleşmesine eklenir
 3. Her bahşişte cüzdanına otomatik akar
 4. BtcTurk/Binance TR'ye gönder → TL'ye çek (off-ramp)
@@ -131,8 +132,10 @@ Distribution rules on-chain set'lenir, merchant değiştiremez çekildikten sonr
 
 ## 8. Tech stack
 
-- **Frontend:** Next.js 14 (App Router) + TypeScript + Tailwind + shadcn/ui
-- **Cüzdan:** Privy embedded wallet SDK (`@privy-io/react-auth`)
+- **Frontend:** Next.js 16 (App Router, Turbopack) + TypeScript ES2020 + Tailwind v4 + framer-motion
+- **Cüzdan (müşteri):** Privy embedded wallet (`@privy-io/react-auth`) — email/SMS giriş, cüzdansız UX
+- **Cüzdan (mekan/staff/dev):** wagmi v2 + RainbowKit v2 (MetaMask injected + WalletConnect v2)
+- **Birleşik state:** `@privy-io/wagmi` adapter — Privy embedded cüzdanı wagmi connector olarak expose eder, tek `useAccount/useReadContract` API'siyle her iki taraf çalışır
 - **Chain:** Monad testnet (chain ID 10143, RPC `https://testnet-rpc.monad.xyz`)
 - **Contract:** Solidity 0.8.x + Foundry + viem
 - **Deploy:** Vercel (frontend) + Monad testnet (contract)
