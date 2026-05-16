@@ -1,4 +1,4 @@
-import { defineChain } from "viem";
+import { createPublicClient, defineChain, http } from "viem";
 import { env } from "./env";
 
 export const monadTestnet = defineChain({
@@ -19,4 +19,14 @@ export const monadTestnet = defineChain({
     },
   },
   testnet: true,
+});
+
+/**
+ * Shared read-only client — waitForTransactionReceipt, gas estimate ve
+ * non-mutating contract read'leri için. Wallet provider gerekmeyen yerde
+ * en hızlısı; her component'te yeni client yaratmamak için tek instance.
+ */
+export const publicClient = createPublicClient({
+  chain: monadTestnet,
+  transport: http(env.NEXT_PUBLIC_MONAD_RPC_URL),
 });

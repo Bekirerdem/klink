@@ -2,9 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Loader2, ShieldCheck, Sparkles, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  ExternalLink,
+  Loader2,
+  ShieldCheck,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import {
+  encodePacked,
+  keccak256,
+  parseUnits,
+  zeroAddress,
+  type Address,
+} from "viem";
 import { type DemoBill, billTotal } from "@/lib/demo-data";
 import { BillSummary } from "./bill-summary";
 import { TipSelector, type TipChoice } from "./tip-selector";
@@ -12,12 +26,28 @@ import { Eyebrow } from "@/components/ui/eyebrow";
 import { Button } from "@/components/ui/button";
 import { PulseDot } from "@/components/ui/pulse-dot";
 import { cn } from "@/lib/utils";
-import { isContractsDeployed } from "@/lib/contracts";
+import {
+  contracts,
+  isContractsDeployed,
+  mockUsdcAbi,
+  payBillAbi,
+} from "@/lib/contracts";
+import { publicClient } from "@/lib/chain";
+import { env } from "@/lib/env";
 import { shortAddress } from "@/lib/format";
 
-type Step = "idle" | "submitting" | "success";
+type Step = "idle" | "preparing" | "funding" | "approving" | "paying" | "success";
 
 const ease = [0.4, 0, 0.2, 1] as const;
+const USDC_DECIMALS = 6;
+const STATUS_LABELS: Record<Step, string> = {
+  idle: "Hazır",
+  preparing: "Bakiye okunuyor",
+  funding: "Bakiye yükleniyor",
+  approving: "Yetki veriliyor",
+  paying: "Ödeme gönderiliyor",
+  success: "Tamam",
+};
 
 export function PayFlow({ bill }: { bill: DemoBill }) {
   const subtotal = useMemo(() => billTotal(bill), [bill]);
@@ -26,6 +56,7 @@ export function PayFlow({ bill }: { bill: DemoBill }) {
   const [customTip, setCustomTip] = useState("");
   const [step, setStep] = useState<Step>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
 
   const tipAmount = useMemo(() => {
     if (tipChoice === "custom") {
@@ -39,41 +70,134 @@ export function PayFlow({ bill }: { bill: DemoBill }) {
 
   const { ready, authenticated, login, user, logout } = usePrivy();
   const { address } = useAccount();
-  const activeWallet = address ?? (user?.wallet?.address as `0x${string}` | undefined);
+  const activeWallet = (address ?? (user?.wallet?.address as Address | undefined)) as
+    | Address
+    | undefined;
+
+  // Read USDC balance — refetches on chain change + wallet change.
+  const { data: balanceRaw, refetch: refetchBalance } = useReadContract({
+    address: contracts.mockUSDC,
+    abi: mockUsdcAbi,
+    functionName: "balanceOf",
+    args: activeWallet ? [activeWallet] : undefined,
+    query: { enabled: !!activeWallet && isContractsDeployed },
+  });
+
+  const balance = useMemo(
+    () => (typeof balanceRaw === "bigint" ? Number(balanceRaw) / 1e6 : 0),
+    [balanceRaw],
+  );
+
+  const { writeContractAsync } = useWriteContract();
 
   const handlePay = async () => {
     setError(null);
+
     if (!authenticated) {
       login();
       return;
     }
 
-    setStep("submitting");
-
-    // Demo flow: contractlar deploy edilmediyse simüle et.
-    // Production'da useWriteContract ile approve + payBill çağrılır.
     if (!isContractsDeployed) {
-      await new Promise((r) => setTimeout(r, 1800));
+      // Fallback demo simülasyonu — addresses .env'de yoksa.
+      setStep("paying");
+      await new Promise((r) => setTimeout(r, 1500));
       setStep("success");
       return;
     }
 
+    if (!activeWallet) {
+      setError("Cüzdan adresi bulunamadı, tekrar bağlan.");
+      return;
+    }
+
     try {
-      // TODO: useWriteContract ile gerçek transaction
-      //   1. MockUSDC.approve(payBill, total)
-      //   2. PayBill.payBill(merchant, tipPool, billAmount, tipAmount, receiptHash)
-      // Hackathon scope: yer tutucu — addresses .env.local'a gelince enable.
-      await new Promise((r) => setTimeout(r, 1800));
+      const totalRaw = parseUnits(total.toString(), USDC_DECIMALS);
+      const billRaw = parseUnits(subtotal.toString(), USDC_DECIMALS);
+      const tipRaw = parseUnits(tipAmount.toString(), USDC_DECIMALS);
+
+      // 1) Top-up — bakiye yetersizse mock USDC mint.
+      setStep("preparing");
+      const currentBalanceRaw = (balanceRaw as bigint | undefined) ?? 0n;
+      if (currentBalanceRaw < totalRaw) {
+        setStep("funding");
+        const fundAmount = totalRaw - currentBalanceRaw + parseUnits("100", USDC_DECIMALS);
+        const mintHash = await writeContractAsync({
+          address: contracts.mockUSDC!,
+          abi: mockUsdcAbi,
+          functionName: "mint",
+          args: [activeWallet, fundAmount],
+        });
+        await publicClient.waitForTransactionReceipt({ hash: mintHash });
+      }
+
+      // 2) Approve PayBill için toplam tutar.
+      setStep("approving");
+      const approveHash = await writeContractAsync({
+        address: contracts.mockUSDC!,
+        abi: mockUsdcAbi,
+        functionName: "approve",
+        args: [contracts.payBill!, totalRaw],
+      });
+      await publicClient.waitForTransactionReceipt({ hash: approveHash });
+
+      // 3) PayBill — bill + (opsiyonel) tip + sadakat mührü tek tx.
+      setStep("paying");
+      const receiptHash = keccak256(
+        encodePacked(
+          ["address", "string", "uint256"],
+          [bill.merchantAddress, bill.masa, BigInt(Date.now())],
+        ),
+      );
+
+      // TipPool deploy edilmediği için şu an tipPool = zeroAddress.
+      // Bu durumda contract tip transfer'i skip ediyor; bahşiş demo'da
+      // hesaba dahil ama on-chain split yapılmıyor. V2'de TipPool deploy
+      // edilir, mekan onboarding flow'da bağlanır.
+      const tipPoolAddress = contracts.tipPool ?? zeroAddress;
+
+      const payHash = await writeContractAsync({
+        address: contracts.payBill!,
+        abi: payBillAbi,
+        functionName: "payBill",
+        args: [
+          bill.merchantAddress,
+          tipPoolAddress,
+          billRaw,
+          tipPoolAddress === zeroAddress ? 0n : tipRaw,
+          receiptHash,
+        ],
+      });
+
+      setTxHash(payHash);
+      await publicClient.waitForTransactionReceipt({ hash: payHash });
+
+      await refetchBalance();
       setStep("success");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "İşlem başarısız");
+      console.error("PayBill error:", e);
+      setError(
+        e instanceof Error
+          ? e.message.split("\n")[0].slice(0, 140)
+          : "İşlem başarısız",
+      );
       setStep("idle");
     }
   };
 
   if (step === "success") {
-    return <SuccessScreen bill={bill} subtotal={subtotal} tip={tipAmount} />;
+    return (
+      <SuccessScreen
+        bill={bill}
+        subtotal={subtotal}
+        tip={tipAmount}
+        txHash={txHash}
+      />
+    );
   }
+
+  const inFlight =
+    step === "preparing" || step === "funding" || step === "approving" || step === "paying";
 
   return (
     <div className="mx-auto w-full max-w-md">
@@ -96,7 +220,13 @@ export function PayFlow({ bill }: { bill: DemoBill }) {
             staffName={bill.staff.name}
           />
 
-          <TotalRow subtotal={subtotal} tip={tipAmount} total={total} />
+          <TotalRow
+            subtotal={subtotal}
+            tip={tipAmount}
+            total={total}
+            balance={balance}
+            activeWallet={activeWallet}
+          />
 
           {error && (
             <motion.p
@@ -113,12 +243,12 @@ export function PayFlow({ bill }: { bill: DemoBill }) {
             size="lg"
             className="w-full"
             onClick={handlePay}
-            disabled={step === "submitting" || !ready}
+            disabled={inFlight || !ready}
           >
-            {step === "submitting" ? (
+            {inFlight ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Onaylanıyor…
+                {STATUS_LABELS[step]}…
               </>
             ) : authenticated ? (
               <>
@@ -168,11 +298,16 @@ function TotalRow({
   subtotal,
   tip,
   total,
+  balance,
+  activeWallet,
 }: {
   subtotal: number;
   tip: number;
   total: number;
+  balance: number;
+  activeWallet?: Address;
 }) {
+  const hasFunds = balance >= total;
   return (
     <div className="space-y-2 rounded-2xl bg-bg-mute px-4 py-4">
       <Row label="Adisyon" value={`${subtotal}₺`} />
@@ -183,6 +318,15 @@ function TotalRow({
       />
       <div className="my-1 border-t border-black/[0.05]" />
       <Row label="Toplam" value={`${total}₺`} tone="strong" />
+      {activeWallet && (
+        <p className="pt-2 text-[11px] uppercase tracking-wider text-ink-link">
+          Bakiye:{" "}
+          <span className={cn("font-mono", hasFunds ? "text-success" : "text-warning")}>
+            {balance.toFixed(2)} kUSDC
+          </span>{" "}
+          {!hasFunds && <span className="text-warning">(otomatik yüklenecek)</span>}
+        </p>
+      )}
     </div>
   );
 }
@@ -226,7 +370,7 @@ function Footer({
   onLogout,
 }: {
   authenticated: boolean;
-  activeWallet?: `0x${string}`;
+  activeWallet?: Address;
   onLogout: () => void;
 }) {
   return (
@@ -235,9 +379,7 @@ function Footer({
         <div className="flex items-center justify-between rounded-xl border border-black/[0.05] bg-white px-3 py-2.5">
           <span className="inline-flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-success" />
-            <span className="font-mono text-ink-soft">
-              {shortAddress(activeWallet)}
-            </span>
+            <span className="font-mono text-ink-soft">{shortAddress(activeWallet)}</span>
           </span>
           <button
             type="button"
@@ -249,8 +391,8 @@ function Footer({
         </div>
       ) : (
         <p className="leading-relaxed">
-          Email ile bağlanınca cüzdanın saniyede kurulur. Seed phrase yok,
-          uzantı yok. Cüzdan tam olarak senin — biz sadece arayüz.
+          Email ile bağlanınca cüzdanın saniyede kurulur. Seed phrase yok, uzantı yok.
+          Cüzdan tam olarak senin — biz sadece arayüz.
         </p>
       )}
 
@@ -265,10 +407,12 @@ function SuccessScreen({
   bill,
   subtotal,
   tip,
+  txHash,
 }: {
   bill: DemoBill;
   subtotal: number;
   tip: number;
+  txHash: `0x${string}` | null;
 }) {
   const total = subtotal + tip;
   return (
@@ -328,10 +472,20 @@ function SuccessScreen({
             </div>
             <p className="text-[12px] leading-relaxed text-ink-link">
               {bill.merchantName} koleksiyonuna 1 mühür düştü. 10 mühür = 1 bedava
-              içecek. Aynı pasaport Çanakkale'deki diğer Klink mekanlarında
-              %10 indirim.
+              içecek. Aynı pasaport Çanakkale'deki diğer Klink mekanlarında %10 indirim.
             </p>
           </div>
+
+          {txHash && (
+            <a
+              href={`${env.NEXT_PUBLIC_MONAD_EXPLORER_URL}/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-medium text-monad-purple hover:underline"
+            >
+              On-chain makbuz <ExternalLink className="h-3 w-3" />
+            </a>
+          )}
 
           <a
             href="/"

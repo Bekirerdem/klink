@@ -17,9 +17,17 @@ export interface DemoBill {
   bar: string;
   merchantName: string;
   merchantSlug: string;
-  staff: { name: string; role: string };
+  merchantAddress: `0x${string}`;
+  staff: { name: string; role: string; address: `0x${string}` };
   lines: BillLine[];
 }
+
+/**
+ * Demo merchant cüzdanı — hackathon scope'unda Bekir'in deploy wallet'ı
+ * hem mekan hem staff olarak rol oynuyor. Production'da bunlar onboarding
+ * flow'unda ayrı kayıt edilir.
+ */
+const DEMO_MERCHANT_ADDRESS = "0x39AEfbC8388da12907A21d9De888B288a9fa5794" as const;
 
 const billLibrary: Record<string, DemoBill> = {
   demo: {
@@ -27,7 +35,8 @@ const billLibrary: Record<string, DemoBill> = {
     bar: "Kafe Boğaz · Çanakkale",
     merchantName: "Kafe Boğaz",
     merchantSlug: "kafe-bogaz",
-    staff: { name: "Ali", role: "Barmen" },
+    merchantAddress: DEMO_MERCHANT_ADDRESS,
+    staff: { name: "Ali", role: "Barmen", address: DEMO_MERCHANT_ADDRESS },
     lines: [
       { name: "Espresso", qty: 2, price: 30 },
       { name: "Cheesecake", qty: 1, price: 80 },
@@ -39,7 +48,8 @@ const billLibrary: Record<string, DemoBill> = {
     bar: "Bar Asit · Çanakkale",
     merchantName: "Bar Asit",
     merchantSlug: "bar-asit",
-    staff: { name: "Ayşe", role: "Garson" },
+    merchantAddress: DEMO_MERCHANT_ADDRESS,
+    staff: { name: "Ayşe", role: "Garson", address: DEMO_MERCHANT_ADDRESS },
     lines: [
       { name: "Negroni", qty: 2, price: 180 },
       { name: "Karışık meze", qty: 1, price: 140 },
