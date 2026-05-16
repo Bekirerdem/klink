@@ -1,12 +1,8 @@
 import { SiteNav } from "@/components/site/site-nav";
 import { Hero } from "@/components/site/hero";
-import { ProtocolCloud } from "@/components/site/protocol-cloud";
-import { StatsStrip } from "@/components/site/stats-strip";
-import { SolutionCards } from "@/components/site/solution-cards";
-import { HowItWorks } from "@/components/site/how-it-works";
-import { LiveFeed } from "@/components/site/live-feed";
-import { MerchantMarquee } from "@/components/site/merchant-marquee";
-import { Trilemma } from "@/components/site/trilemma";
+import { MostActiveMerchants } from "@/components/site/most-active-merchants";
+import { PowerTheMerchant } from "@/components/site/power-the-merchant";
+import { DarkLiveNetwork } from "@/components/site/dark-live-network";
 import { CtaBand } from "@/components/site/cta-band";
 import { SiteFooter } from "@/components/site/site-footer";
 
@@ -15,13 +11,9 @@ export default function HomePage() {
     <main className="relative">
       <SiteNav />
       <Hero />
-      <ProtocolCloud />
-      <StatsStrip />
-      <SolutionCards />
-      <HowItWorks />
-      <LiveFeed />
-      <MerchantMarquee />
-      <Trilemma />
+      <MostActiveMerchants />
+      <PowerTheMerchant />
+      <DarkLiveNetwork />
       <CtaBand />
       <SiteFooter />
     </main>
