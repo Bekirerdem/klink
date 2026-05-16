@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  /* Monad palette */
+  --color-monad-purple: #6e54ff;
+  --color-monad-purple-soft: #836ef9;
+  --color-monad-purple-hover: #4f47eb;
+  --color-monad-purple-light: #eee8ff;
+  --color-monad-purple-pale: #d7d5ff;
+
+  --color-bg-base: #ffffff;
+  --color-bg-mute: #fbfaf9;
+
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #18181b;
+  --color-ink-link: #364153;
+  --color-ink-mute: #71717a;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Fonts — wired to next/font CSS variables */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-roboto-mono), ui-monospace, "Cascadia Code", monospace;
+
+  /* Radius */
+  --radius-pill: 9999px;
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* Shadows — Monad signature */
+  --shadow-monad-button:
+    rgba(0, 0, 0, 0.2) 0px 1px 2px 0px,
+    rgba(255, 255, 255, 0.25) 0px 1px 0.5px 0px inset,
+    rgba(255, 255, 255, 0.25) 0px -1px 0.5px 0px inset,
+    rgba(79, 71, 235, 0.9) 0px 0px 0px 1px;
+  --shadow-monad-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-monad-glow: 0 0 64px rgba(110, 84, 255, 0.18);
+
+  /* Easing */
+  --ease-monad: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-bg-base);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+/* Selection — Monad purple wash */
+::selection {
+  background: var(--color-monad-purple-light);
+  color: var(--color-monad-purple-hover);
+}
+
+/* Monad-signature primitives surfaced as utilities */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-monad-purple);
+}
+
+@utility metric {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility dot-grid {
+  background-image: radial-gradient(circle, rgba(10, 10, 10, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@utility radial-purple {
+  background-image: radial-gradient(
+    circle at 50% 0%,
+    rgba(110, 84, 255, 0.12),
+    transparent 60%
+  );
+}
+
+/* Pulse for "LIVE" indicators */
+@keyframes klink-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.pulse-dot {
+  animation: klink-pulse 1.5s var(--ease-monad) infinite;
+}
+
+/* Horizontal marquee for app carousel */
+@keyframes klink-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes klink-marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.marquee-track {
+  animation: klink-marquee 40s linear infinite;
+}
+
+.marquee-track-reverse {
+  animation: klink-marquee-reverse 50s linear infinite;
+}
+
+.marquee-track:hover,
+.marquee-track-reverse:hover {
+  animation-play-state: paused;
+}
